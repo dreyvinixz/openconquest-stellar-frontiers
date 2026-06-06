@@ -2,55 +2,62 @@ import string
 import random
 from uuid import uuid4
 from fastapi import HTTPException
+from sqlalchemy.orm import Session
 
-from app.models.room import RoomModel, RoomPlayerModel
+from app.models.room import Room, RoomPlayer
+from app.models.match import Match
 from app.game_engine.reducer import start_match
 from app.game_engine.state import MatchState
 
-# In-memory database for MVP
-_rooms_db: dict[str, RoomModel] = {}
-_matches_db: dict[str, MatchState] = {}
-
-def _generate_room_code() -> str:
-    return ''.join(random.choices(string.ascii_uppercase + string.digits, k=6))
+def _generate_room_code(length=6) -> str:
+    return ''.join(random.choices(string.ascii_uppercase + string.digits, k=length))
 
 class RoomService:
-    
     @classmethod
-    def create_room(cls, host_name: str, max_players: int, map_id: str) -> tuple[RoomModel, RoomPlayerModel]:
+    def create_room(cls, db: Session, host_name: str, max_players: int = 4, map_id: str = "default_galaxy") -> tuple[Room, RoomPlayer]:
         room_code = _generate_room_code()
-        while room_code in _rooms_db:
+        
+        # Ensure unique code
+        while db.query(Room).filter(Room.id == room_code).first() is not None:
             room_code = _generate_room_code()
             
-        host_player = RoomPlayerModel(
-            id=str(uuid4()),
-            name=host_name,
-            is_host=True
-        )
-        
-        room = RoomModel(
-            room_code=room_code,
+        new_room = Room(
+            id=room_code,
             max_players=max_players,
             map_id=map_id,
-            players=[host_player]
+            status="waiting"
         )
-        _rooms_db[room_code] = room
-        return room, host_player
+        db.add(new_room)
+        
+        host_player = RoomPlayer(
+            id=str(uuid4()),
+            room_id=room_code,
+            player_name=host_name,
+            is_host=True,
+            token=str(uuid4())
+        )
+        db.add(host_player)
+        
+        db.commit()
+        db.refresh(new_room)
+        db.refresh(host_player)
+        
+        return new_room, host_player
 
     @classmethod
-    def list_waiting_rooms(cls) -> list[RoomModel]:
-        return [r for r in _rooms_db.values() if r.status == "waiting"]
+    def list_waiting_rooms(cls, db: Session) -> list[Room]:
+        return db.query(Room).filter(Room.status == "waiting").all()
 
     @classmethod
-    def get_room(cls, room_code: str) -> RoomModel:
-        room = _rooms_db.get(room_code)
+    def get_room(cls, db: Session, room_code: str) -> Room:
+        room = db.query(Room).filter(Room.id == room_code).first()
         if not room:
             raise HTTPException(status_code=404, detail="Room not found")
         return room
 
     @classmethod
-    def join_room(cls, room_code: str, player_name: str) -> tuple[RoomModel, RoomPlayerModel]:
-        room = cls.get_room(room_code)
+    def join_room(cls, db: Session, room_code: str, player_name: str) -> tuple[Room, RoomPlayer]:
+        room = cls.get_room(db, room_code)
         
         if room.status != "waiting":
             raise HTTPException(status_code=400, detail="Room has already started")
@@ -58,21 +65,26 @@ class RoomService:
         if len(room.players) >= room.max_players:
             raise HTTPException(status_code=400, detail="Room is full")
             
-        # Optional: Prevent duplicate names
-        if any(p.name == player_name for p in room.players):
+        if any(p.player_name == player_name for p in room.players):
             raise HTTPException(status_code=400, detail="Name already taken in this room")
             
-        new_player = RoomPlayerModel(
+        new_player = RoomPlayer(
             id=str(uuid4()),
-            name=player_name,
-            is_host=False
+            room_id=room_code,
+            player_name=player_name,
+            is_host=False,
+            token=str(uuid4())
         )
-        room.players.append(new_player)
+        db.add(new_player)
+        db.commit()
+        db.refresh(room)
+        db.refresh(new_player)
+        
         return room, new_player
 
     @classmethod
-    def start_match(cls, room_code: str, player_token: str) -> str:
-        room = cls.get_room(room_code)
+    def start_match(cls, db: Session, room_code: str, player_token: str) -> str:
+        room = cls.get_room(db, room_code)
         
         if room.status != "waiting":
             raise HTTPException(status_code=400, detail="Room is not in waiting state")
@@ -80,18 +92,25 @@ class RoomService:
         if len(room.players) < 2:
             raise HTTPException(status_code=400, detail="Need at least 2 players to start")
             
-        # Authorize host
         host = next((p for p in room.players if p.is_host), None)
         if not host or host.token != player_token:
             raise HTTPException(status_code=403, detail="Only the host can start the match")
             
-        # Start game via engine
-        player_names = [p.name for p in room.players]
-        match_state = start_match(player_names=player_names, room_code=room.room_code)
+        # Initialize pure game engine match state
+        player_names = [p.player_name for p in room.players]
+        match_state = start_match(player_names=player_names, room_code=room.id)
         
-        # In a real DB, we would save this to the matches table
-        _matches_db[match_state.match_id] = match_state
+        # Save Match state as JSON
+        new_match = Match(
+            id=match_state.match_id,
+            room_id=room.id,
+            state_json=match_state.model_dump(mode="json")
+        )
+        db.add(new_match)
         
+        # Update room status
         room.status = "started"
         room.match_id = match_state.match_id
+        
+        db.commit()
         return match_state.match_id

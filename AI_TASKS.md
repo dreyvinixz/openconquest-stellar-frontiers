@@ -24,7 +24,7 @@ Status: pending
 Status: completed
 
 ### Task 3 — Persistence
-Status: pending
+Status: completed
 
 ### Task 4 — WebSocket Sync
 Status: pending

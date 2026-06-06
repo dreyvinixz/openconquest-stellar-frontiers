@@ -1,4 +1,15 @@
 services:
+  db:
+    image: postgres:15-alpine
+    environment:
+      POSTGRES_USER: conquest_user
+      POSTGRES_PASSWORD: conquest_password
+      POSTGRES_DB: stellar_frontiers
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
   api:
     build:
       context: ./apps/api
@@ -7,3 +18,11 @@ services:
     environment:
       APP_ENV: development
       CORS_ORIGINS: http://localhost:5173
+      DATABASE_URL: postgresql://conquest_user:conquest_password@db:5432/stellar_frontiers
+    depends_on:
+      - db
+    volumes:
+      - ./apps/api:/app
+
+volumes:
+  postgres_data:
