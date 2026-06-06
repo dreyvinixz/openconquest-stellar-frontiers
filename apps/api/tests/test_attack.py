@@ -4,7 +4,6 @@ Tests: Attack system.
 
 from __future__ import annotations
 
-import random
 
 import pytest
 
@@ -197,7 +196,6 @@ class TestAttack:
         # Give source a massive troop advantage
         state.territories[source.id] = source.model_copy_update(troops=100)
         target_id = target.id
-        original_owner = target.owner_id
 
         # Run 20 attacks until one succeeds (very likely with 99 vs 1)
         won = False

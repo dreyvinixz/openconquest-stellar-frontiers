@@ -12,11 +12,10 @@ from app.game_engine.objectives import (
 )
 from app.game_engine.reducer import (
     advance_phase,
-    attack,
     end_turn,
     place_reinforcement,
 )
-from app.game_engine.state import GamePhase, ObjectiveType
+from app.game_engine.state import GamePhase
 from app.game_engine.validators import GameActionError
 from tests.conftest import make_match
 

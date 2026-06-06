@@ -7,7 +7,6 @@ from sqlalchemy.orm import Session
 from app.models.room import Room, RoomPlayer
 from app.models.match import Match
 from app.game_engine.reducer import start_match
-from app.game_engine.state import MatchState
 
 def _generate_room_code(length=6) -> str:
     return ''.join(random.choices(string.ascii_uppercase + string.digits, k=length))

@@ -7,7 +7,7 @@ from uuid import uuid4
 from .combat import resolve_combat
 from .map import load_default_map
 from .objectives import check_objective_completed, controlled_regions, load_default_objectives
-from .state import GameLogEntry, GamePhase, MatchState, Player, Territory
+from .state import GameLogEntry, GamePhase, MatchState, Player
 from .validators import (
     GameActionError,
     validate_attack_action,
