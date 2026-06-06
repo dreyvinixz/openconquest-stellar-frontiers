@@ -19,10 +19,12 @@ export function MatchBoard() {
   const isMyTurn = matchState.players[currentPlayerId]?.name === playerName;
   const myPlayerId = Object.keys(matchState.players).find(id => matchState.players[id].name === playerName);
 
+  console.log('MatchBoard render. round:', matchState.round_number, 'territories exists:', !!matchState.territories);
+
   const handleNodeClick = (nodeId: string) => {
     if (!isMyTurn) return;
 
-    const territory = matchState.board.territories[nodeId];
+    const territory = matchState.territories[nodeId];
     const isMine = territory.owner_id === myPlayerId;
 
     if (matchState.phase === 'reinforcement') {
@@ -48,7 +50,8 @@ export function MatchBoard() {
         }
         
         // Check adjacency
-        if (matchState.board.edges[selectedNode].includes(nodeId)) {
+        const neighbors = matchState.territories[selectedNode].neighbors || [];
+        if (neighbors.includes(nodeId)) {
           setTargetNode(nodeId);
           setActionType(matchState.phase === 'attack' ? 'attack' : 'move');
           setModalOpen(true);
@@ -95,7 +98,7 @@ export function MatchBoard() {
     modalTitle = 'Deploy Fleet';
     modalDesc = `Deploying to ${selectedNode}`;
   } else if ((actionType === 'attack' || actionType === 'move') && selectedNode) {
-    maxTroops = matchState.board.territories[selectedNode].troops - 1; // leave 1 behind
+    maxTroops = matchState.territories[selectedNode].troops - 1; // leave 1 behind
     modalTitle = actionType === 'attack' ? 'Initiate Attack' : 'Move Fleet';
     modalDesc = `From ${selectedNode} to ${targetNode}`;
   }

@@ -58,10 +58,25 @@ def join_room(room_code: str, request: RoomJoinRequest, db: Session = Depends(ge
         player_token=player.token
     )
 
+from app.websocket.manager import manager
+from app.models.match import Match
+
 @router.post("/{room_code}/start", response_model=StartMatchResponse)
-def start_room(room_code: str, authorization: Annotated[str | None, Header()] = None, db: Session = Depends(get_db)):
+async def start_room(room_code: str, authorization: Annotated[str | None, Header()] = None, db: Session = Depends(get_db)):
     if not authorization or not authorization.startswith("Bearer "):
         raise HTTPException(status_code=401, detail="Missing or invalid Authorization header")
     token = authorization.replace("Bearer ", "")
+    
     match_id = RoomService.start_match(db, room_code.upper(), token)
+    
+    import json
+    # Broadcast the initial match state so all clients can render the board immediately
+    match = db.query(Match).filter(Match.id == match_id).first()
+    if match:
+        state_dict = match.state_json if isinstance(match.state_json, dict) else json.loads(match.state_json)
+        await manager.broadcast_to_room({
+            "event": "match_state_updated",
+            "state": state_dict
+        }, room_code.upper())
+        
     return StartMatchResponse(match_id=match_id)

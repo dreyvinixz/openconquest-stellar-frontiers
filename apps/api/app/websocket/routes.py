@@ -27,10 +27,12 @@ async def websocket_endpoint(websocket: WebSocket, room_code: str, player_name: 
             if action_type in allowed_actions:
                 try:
                     new_state = match_service.handle_player_action(db, room_code, player_name, data)
+                    import json
+                    state_dict = new_state if isinstance(new_state, dict) else json.loads(new_state)
                     
                     await manager.broadcast_to_room({
                         "event": "match_state_updated",
-                        "state": new_state
+                        "state": state_dict
                     }, room_code)
                     
                 except ValueError as e:

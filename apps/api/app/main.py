@@ -6,9 +6,18 @@ from app.routers import health
 from app.routers.rooms import router as rooms_router
 from app.websocket import routes as websocket_routes
 
+from contextlib import asynccontextmanager
+from app.database import Base, engine
+
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    Base.metadata.create_all(bind=engine)
+    yield
+
 app = FastAPI(
     title='OpenConquest: Stellar Frontiers API',
-    version='0.1.0'
+    version='0.1.0',
+    lifespan=lifespan
 )
 
 # Set up CORS

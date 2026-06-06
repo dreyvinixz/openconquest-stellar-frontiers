@@ -35,5 +35,5 @@ Status: completed
 ### Task 6 — Galaxy Map
 Status: completed
 
-### Task 7 — Full Playthrough
-Status: pending
+### [x] Task 7: Full Playthrough E2E
+Status: completed
