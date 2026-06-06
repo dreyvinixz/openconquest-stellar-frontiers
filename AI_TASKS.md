@@ -30,7 +30,7 @@ Status: completed
 Status: pending
 
 ### Task 5 — Frontend Shell
-Status: pending
+Status: completed
 
 ### Task 6 — Galaxy Map
 Status: pending

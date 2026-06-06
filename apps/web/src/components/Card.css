@@ -1,0 +1,11 @@
+.card {
+  padding: 2rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.card-glow {
+  box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.5), 0 0 20px rgba(157, 0, 255, 0.15);
+  border-color: rgba(157, 0, 255, 0.3);
+}
