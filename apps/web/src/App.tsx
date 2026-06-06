@@ -1,6 +1,6 @@
 import { useEffect } from 'react';
 import { Lobby } from './pages/Lobby';
-import { GalaxyMapPlaceholder } from './pages/GalaxyMapPlaceholder';
+import { MatchBoard } from './pages/MatchBoard';
 import { useGameStore } from './store/useGameStore';
 import { connectWebSocket, disconnectWebSocket } from './services/ws';
 
@@ -18,7 +18,7 @@ function App() {
 
   return (
     <>
-      {!matchState ? <Lobby /> : <GalaxyMapPlaceholder />}
+      {!matchState ? <Lobby /> : <MatchBoard />}
     </>
   );
 }

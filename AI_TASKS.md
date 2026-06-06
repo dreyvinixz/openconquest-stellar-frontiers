@@ -33,7 +33,7 @@ Status: pending
 Status: completed
 
 ### Task 6 — Galaxy Map
-Status: pending
+Status: completed
 
 ### Task 7 — Full Playthrough
 Status: pending
