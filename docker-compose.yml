@@ -1,0 +1,9 @@
+services:
+  api:
+    build:
+      context: ./apps/api
+    ports:
+      - "8000:8000"
+    environment:
+      APP_ENV: development
+      CORS_ORIGINS: http://localhost:5173
