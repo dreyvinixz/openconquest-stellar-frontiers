@@ -3,6 +3,7 @@ from fastapi.middleware.cors import CORSMiddleware
 
 from .config import settings
 from .routers.health import router as health_router
+from .routers.rooms import router as rooms_router
 
 app = FastAPI(title='OpenConquest: Stellar Frontiers API', version='0.1.0')
 
@@ -16,3 +17,4 @@ app.add_middleware(
 )
 
 app.include_router(health_router, prefix='/api/v1')
+app.include_router(rooms_router, prefix='/api/v1')

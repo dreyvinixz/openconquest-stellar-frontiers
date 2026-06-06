@@ -21,7 +21,7 @@ Build a playable MVP before adding advanced visuals or complex mechanics.
 Status: pending
 
 ### Task 2 — Room REST API
-Status: pending
+Status: completed
 
 ### Task 3 — Persistence
 Status: pending
