@@ -27,7 +27,7 @@ Status: completed
 Status: completed
 
 ### Task 4 — WebSocket Sync
-Status: pending
+Status: completed
 
 ### Task 5 — Frontend Shell
 Status: completed
