@@ -1,13 +1,12 @@
 # Legal Notice
 
-OpenConquest: Stellar Frontiers is an independent open-source project created for educational, entertainment and community purposes.
+OpenConquest: Stellar Frontiers is an independent, open-source project. 
 
-It is not affiliated with, endorsed by, sponsored by, or connected to Grow, WAR, Risk, Hasbro, or any other commercial board game publisher.
+## No Affiliation
+This project is not affiliated with, endorsed by, or connected to any commercial board game publisher, including but not limited to Hasbro, Grow, or the creators of Risk and WAR.
 
-All code, names, maps, sectors, planets, stations, rules, text and future assets must be original or properly licensed.
+## Original IP
+All names, maps, sectors, planets, stations, rules, assets, and mechanics in this project are original or based on generic concepts of the territory-control and space-strategy genres. Any resemblance to existing copyrighted fictional universes is purely coincidental.
 
-The project uses generic and unprotected concepts common to strategy games, such as turn-based play, map nodes, reinforcements, movement, combat and secret objectives.
-
-Code license: AGPL-3.0 intended.
-Assets license: CC BY-SA 4.0 intended.
-Documentation license: CC BY 4.0 intended.
+## License
+This repository is licensed under the AGPL-3.0 License. See the `LICENSE` file for details.

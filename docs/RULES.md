@@ -1,41 +1,31 @@
-# Rules — OpenConquest: Stellar Frontiers MVP
+# Game Rules
 
-## Setup
+This document maps the abstract game engine rules to the space theme of Stellar Frontiers.
 
-2 to 4 players join a room. When the host starts, the server distributes planets/stations, assigns secret missions and selects the first player.
+## Game Board
+The galaxy map consists of **Nodes** (planets, stations) grouped into **Sectors** (regions).
+- Nodes are connected by jump lanes (adjacency).
+- Fleets (troops) are stationed at these nodes.
 
-## Turn Phases
+## Phases of a Turn
 
-1. Reinforcement
-2. Attack
-3. Movement
-4. End turn
+### 1. Reinforcement Phase
+At the beginning of a turn, the active player receives new fleets based on the nodes they control.
+- **Base calculation:** Number of controlled nodes divided by 3 (minimum 3).
+- **Sector Bonus:** If a player controls *every* node in a Sector, they receive bonus fleets specific to that Sector.
+- The player places these fleets on any nodes they already control.
 
-## Reinforcement
+### 2. Attack Phase (Orbital Invasions)
+The player can launch attacks from their controlled nodes to adjacent enemy nodes.
+- **Requirement:** The attacking node must have at least 2 fleets (1 must stay behind).
+- **Combat Resolution:** Dice rolls or deterministic strength comparison (depending on configuration) resolves the combat. If the attacker wins, they conquer the node and move at least the attacking fleets into it.
 
-```text
-base_fleets = max(3, floor(controlled_nodes / 3))
-sector_bonus = sum bonus for each fully controlled sector
-total = base_fleets + sector_bonus
-```
+### 3. Movement Phase
+The player can move fleets between connected nodes they control.
+- **Requirement:** Must leave at least 1 fleet behind on the origin node.
+- Typically limited to one movement action per turn, or limited by path adjacency.
 
-All fleets must be placed before advancing to attack.
-
-## Attack
-
-The active player may attack adjacent enemy nodes from a controlled node with at least 2 fleets.
-
-```text
-attack_power = attacking_fleets + roll(1-6)
-defense_power = defending_fleets + roll(1-6)
-```
-
-The attacker wins only if `attack_power > defense_power`; ties go to the defender.
-
-## Movement
-
-Once per turn, after the attack phase, the active player may move fleets between two adjacent controlled nodes. The source must keep at least 1 fleet.
-
-## Victory
-
-A player wins by completing their secret mission at the end of their turn or by becoming the last faction with controlled nodes.
+## Secret Missions (Objectives)
+Each player receives a secret mission at the start of the game.
+- Example: "Control 2 entire Sectors" or "Eliminate the Red Faction".
+- The game checks objective completion at the end of every turn. If met, the player wins the game.
